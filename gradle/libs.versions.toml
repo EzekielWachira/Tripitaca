@@ -47,8 +47,13 @@ material = "1.11.0"
 timber = "5.0.1"
 org-jetbrains-kotlin-jvm = "1.9.21"
 lib-phone = "8.13.7"
+maps-compose = "4.3.0"
 
 [libraries]
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
+maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "maps-compose" }
+maps-compose-widgets = { module = "om.google.maps.android:maps-compose-widgets", version.ref = "maps-compose" }
+
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist-systemuicontroller" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camera-lifecycle" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera-lifecycle" }

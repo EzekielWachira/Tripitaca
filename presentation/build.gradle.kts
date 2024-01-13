@@ -24,18 +24,35 @@ android {
             )
         }
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_19
+        targetCompatibility = JavaVersion.VERSION_19
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "19"
     }
 }
 
 dependencies {
 
+    implementation(project(":designsystem"))
+    implementation(platform(libs.compose.bom))
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.ui)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.activity.compose)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
+    implementation(libs.material3)
     implementation(libs.core.ktx)
+    implementation(libs.maps.compose)
     implementation(libs.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)

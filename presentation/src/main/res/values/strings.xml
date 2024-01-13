@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="favorites">Favorites</string>
+    <string name="main">Main</string>
+    <string name="profile">Profile</string>
+    <string name="inbox">Inbox</string>
+</resources>

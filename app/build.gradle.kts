@@ -52,6 +52,7 @@ android {
 
 dependencies {
 
+    implementation(project(":presentation"))
     implementation(project(":designsystem"))
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

@@ -10,21 +10,32 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = DarkBlue,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    onPrimary = Blue,
+    outline = Grey46,
+    background = DarkBlue,
+    surface = Grey14,
+    inversePrimary = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Blue,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
+    onPrimary = Blue,
+    outline = Grey74,
+    background = Color.White,
+    surface = Grey96,
+    inversePrimary = Grey13
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -45,10 +56,10 @@ fun TripitacaTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
