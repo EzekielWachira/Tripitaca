@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,17 +28,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ezzy.data.domain.model.Property
 import com.ezzy.designsystem.components.CustomPadding
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
-import com.ezzy.presentation.home.model.Listing
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListingItem(
     modifier: Modifier = Modifier,
-    listing: Listing,
-    onClick: (Listing) -> Unit = {}
+    listing: Property,
+    onClick: (Property) -> Unit = {}
 ) {
 
     Surface(
@@ -53,13 +52,14 @@ fun ListingItem(
         Row(
             modifier = Modifier
                 .padding(DpDimensions.Small)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top
         ) {
 
-            Box{
+            Box {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(listing.image)
+                        .data(listing.photos[0])
                         .placeholder(R.drawable.placeholder)
                         .crossfade(true)
                         .build(),
@@ -67,10 +67,9 @@ fun ListingItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .clip(RoundedCornerShape(DpDimensions.Small))
-                        .height(DpDimensions.Dp130)
-                        .width(DpDimensions.Dp130)
+                        .height(120.dp)
+                        .width(120.dp)
                 )
-
 
 
             }
@@ -78,7 +77,7 @@ fun ListingItem(
             Spacer(modifier = Modifier.height(DpDimensions.Normal))
 
             CustomPadding(
-                verticalPadding = DpDimensions.Normal,
+                verticalPadding = DpDimensions.Small,
                 horizontalPadding = DpDimensions.Small,
                 modifier = Modifier.weight(1f)
             ) {
@@ -87,7 +86,7 @@ fun ListingItem(
                 Text(
                     text = listing.name,
                     color = MaterialTheme.colorScheme.inversePrimary,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.basicMarquee(),
                     maxLines = 1
@@ -101,14 +100,14 @@ fun ListingItem(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.pin), contentDescription = null,
-                        modifier = Modifier.size(DpDimensions.Dp20),
+                        modifier = Modifier.size(DpDimensions.Normal),
                         tint = MaterialTheme.colorScheme.inversePrimary
                     )
 
                     Text(
-                        text = listing.location,
+                        text = listing.smart_location,
                         color = MaterialTheme.colorScheme.inversePrimary,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -120,16 +119,16 @@ fun ListingItem(
                 ) {
 
                     Text(
-                        text = listing.amount,
+                        text = listing.price.toString(),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
 
                     Text(
-                        text = "/month",
+                        text = "/day",
                         color = MaterialTheme.colorScheme.inversePrimary,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
 
