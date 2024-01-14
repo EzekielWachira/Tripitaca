@@ -6,4 +6,9 @@
     <string name="main">Main</string>
     <string name="profile">Profile</string>
     <string name="inbox">Inbox</string>
+    <string name="search">Search</string>
+    <string name="facilities">Facilities</string>
+    <string name="filter">Filter</string>
+    <string name="amenities">Amenities</string>
+    <string name="view_all">View All</string>
 </resources>
