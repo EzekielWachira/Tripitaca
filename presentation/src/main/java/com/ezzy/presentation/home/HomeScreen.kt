@@ -1,11 +1,9 @@
 package com.ezzy.presentation.home
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,9 +12,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -45,10 +41,10 @@ import com.ezzy.presentation.home.components.FilterBottomSheet
 import com.ezzy.presentation.home.components.HomeTopBar
 import com.ezzy.presentation.home.components.ListingItem
 import com.ezzy.presentation.home.components.SearchFilterComponent
-import com.ezzy.presentation.home.model.filters
 import com.ezzy.presentation.home.viewmodel.HomeViewModel
 import com.ezzy.quizzo.ui.common.state.SearchState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 private const val TAG = "HomeScreen"
 
@@ -70,12 +66,10 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
         mutableStateOf(false)
     }
 
-    var filters by remember {
-        mutableStateOf(filters)
-    }
 
     val viewModel: HomeViewModel = hiltViewModel()
     val listingState by viewModel.listingState.collectAsStateWithLifecycle()
+    val filters by viewModel.filters.collectAsStateWithLifecycle(initialValue = emptyList())
 
 
     SideEffect {
@@ -86,7 +80,7 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
         )
     }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = listingState.state) {
         viewModel.getListings()
     }
 
@@ -210,9 +204,16 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
             if (isSheetOpen) {
                 FilterBottomSheet(bottomSheetState = bottomSheetState,
                     onDismiss = { isSheetOpen = false },
-                    filters = filters,
+                    filterss = filters,
                     onFilterCheck = { isChecked, filter ->
-                        filters[filters.indexOf(filter)].isSelected = isChecked
+                        coroutineScope.launch {
+                            viewModel.applyFilter(
+                                filter = filter.apply {
+                                    isSelected = isChecked
+                                },
+                                filters
+                            )
+                        }
                     })
             }
 

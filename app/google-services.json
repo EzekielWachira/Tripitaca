@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331123234303",
+    "project_id": "tripitaca-5ee28",
+    "storage_bucket": "tripitaca-5ee28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331123234303:android:5cf8276effccdefb2983ca",
+        "android_client_info": {
+          "package_name": "com.ezzy.tripitaca"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjeAqRG80eLUoG8kwDQ568xS0xPUcHFgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

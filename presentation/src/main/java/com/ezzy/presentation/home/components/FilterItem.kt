@@ -10,13 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.ezzy.data.domain.model.Filter
 import com.ezzy.designsystem.theme.TripitacaTheme
 import com.ezzy.presentation.R
-import com.ezzy.presentation.home.model.Filter
-import com.ezzy.presentation.home.model.filters
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,8 +57,8 @@ fun FilterItem(
 @Composable
 fun FilterItemPreview() {
     TripitacaTheme {
-        FilterItem(filter = filters[0]) { isChecked, filter ->
-
-        }
+//        FilterItem(filter = filters[0]) { isChecked, filter ->
+//
+//        }
     }
 }

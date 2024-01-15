@@ -1,6 +1,5 @@
 package com.ezzy.presentation.home.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,15 +17,20 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ezzy.data.domain.model.Filter
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
-import com.ezzy.presentation.home.model.Filter
+import com.ezzy.presentation.home.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -35,10 +39,14 @@ fun FilterBottomSheet(
     cornerRadius: Dp = DpDimensions.Dp20,
     bottomSheetState: SheetState,
     onDismiss: () -> Unit,
-    filters: List<Filter>,
+    filterss: List<Filter>,
     onFilterCheck: (isChecked: Boolean, filter: Filter) -> Unit
 ) {
 
+    val coroutineScope = rememberCoroutineScope()
+
+    val viewModel: HomeViewModel = hiltViewModel()
+    val filters by viewModel.filters.collectAsStateWithLifecycle(initialValue = emptyList())
 
 
     ModalBottomSheet(
@@ -102,11 +110,20 @@ fun FilterBottomSheet(
 
             Spacer(modifier = Modifier.height(DpDimensions.Normal))
 
-            FlowRow(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(DpDimensions.Small)) {
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DpDimensions.Small)
+            ) {
                 filters.forEach { filter ->
                     FilterItem(filter = filter, onCheck = { isChecked, fl ->
-                        onFilterCheck(isChecked, fl)
+                        coroutineScope.launch {
+                            viewModel.applyFilter(
+                                filter = filter.apply {
+                                    isSelected = isChecked
+                                },
+                                filters
+                            )
+                        }
                     })
                 }
             }

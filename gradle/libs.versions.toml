@@ -11,6 +11,7 @@ core = "3.5.1"
 debugger = "1.1.2"
 androidxComposeCompiler = "1.5.0"
 datastorePreferences = "1.0.0"
+firebaseAuthKtx = "22.3.0"
 gson = "2.10.1"
 hilt-android = "2.48.1"
 jetpack_compose_country_code_picker_emoji = "1.0.6"
@@ -36,6 +37,7 @@ junit4Ext = "1.1.5"
 junit4 = "4.13.2"
 paging-compose = "3.2.1"
 play-services-code-scanner = "16.1.0"
+playServicesAuth = "20.7.0"
 retrofit = "2.9.0"
 room-runtime = "2.6.1"
 runtime-livedata = "1.5.4"
@@ -48,8 +50,10 @@ timber = "5.0.1"
 org-jetbrains-kotlin-jvm = "1.9.21"
 lib-phone = "8.13.7"
 maps-compose = "4.3.0"
+google-services = "4.4.0"
 
 [libraries]
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "maps-compose" }
 maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "maps-compose" }
 maps-compose-widgets = { module = "om.google.maps.android:maps-compose-widgets", version.ref = "maps-compose" }
@@ -103,6 +107,7 @@ activity-compose = { group = "androidx.activity", name = "activity-compose", ver
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "logging-interceptor" }
 msz-progress-indicator = { module = "com.ehsanmsz:msz-progress-indicator", version.ref = "msz-progress-indicator" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 ui = { group = "androidx.compose.ui", name = "ui" }
@@ -138,6 +143,7 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 org-jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "org-jetbrains-kotlin-jvm" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = {id = "com.google.gms.google-services", version.ref = "google-services" }
 
 [bundles]
 room = ["androidx-room-ktx", "androidx-room-runtime", "androidx-room-paging"]

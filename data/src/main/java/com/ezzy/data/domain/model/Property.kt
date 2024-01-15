@@ -1,5 +1,8 @@
 package com.ezzy.data.domain.model
 
+import androidx.annotation.Keep
+
+@Keep
 data class Property(
     val access: String,
     val accommodates: Int,

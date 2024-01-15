@@ -19,7 +19,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,7 +37,9 @@ android {
 
 dependencies {
 
-
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
     implementation(libs.gson)
     implementation(libs.core.ktx)
     implementation(libs.appcompat)

@@ -27,10 +27,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.ezzy.tripitaca" />
+                  <option name="mobileSdkAppId" value="1:331123234303:android:5cf8276effccdefb2983ca" />
+                  <option name="projectId" value="tripitaca-5ee28" />
+                  <option name="projectNumber" value="331123234303" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
