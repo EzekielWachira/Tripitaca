@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DetailScreen()
+                    MainScreen()
 //                    val navController = rememberNavController()
 //                    NavHost(navController = navController, startDestination = "login") {
 //                        composable(route = "login") {

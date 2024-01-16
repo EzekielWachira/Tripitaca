@@ -17,5 +17,6 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.secret.gradle.plugin) apply false
 }
 true // Needed to make the Suppress annotation work for the plugins block

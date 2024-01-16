@@ -1,6 +1,5 @@
 package com.ezzy.presentation.listing_detail
 
-import android.widget.Space
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -38,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,10 +54,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ehsanmsz.mszprogressindicator.progressindicator.BallSpinFadeLoaderProgressIndicator
 import com.ezzy.data.domain.model.Property
-import com.ezzy.data.utils.property
+import com.ezzy.data.utils.StateWrapper
 import com.ezzy.designsystem.components.CommonAppBar
 import com.ezzy.designsystem.components.CustomPadding
 import com.ezzy.designsystem.components.PrimaryButton
@@ -66,22 +70,32 @@ import com.ezzy.designsystem.theme.Grey74
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
 import com.ezzy.presentation.listing_detail.components.PagerIndicator
+import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.utils.smartTruncate
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailScreen(
-//    navController: NavController,
-    isSystemInDarkMode: Boolean = isSystemInDarkTheme()
+    navController: NavController,
+    propertyId: String?,
+    isSystemInDarkMode: Boolean = isSystemInDarkTheme(),
+    viewModel: DetailViewModel
 ) {
 
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkMode
 
-    val pagerState = rememberPagerState {
-        photos.size
-    }
+
+//    val viewModel: DetailViewModel = hiltViewModel()
+    val state by viewModel.singleListingState.collectAsStateWithLifecycle()
+    val property by viewModel.property.collectAsStateWithLifecycle()
 
     SideEffect {
         systemUiController.setSystemBarsColor(
@@ -91,13 +105,17 @@ fun DetailScreen(
         )
     }
 
+    LaunchedEffect(key1 = state.state) {
+        viewModel.getListing(propertyId!!)
+    }
+
 
     Scaffold(
         topBar = {
             CommonAppBar(backIcon = R.drawable.back,
                 modifier = Modifier.fillMaxWidth(),
                 onBackClicked = {
-//                    navController.popBackStack()
+                    navController.popBackStack()
                 })
         }
     ) { paddingValues ->
@@ -110,95 +128,319 @@ fun DetailScreen(
 
         ) {
 
-            Column(modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())) {
+            if (property != null) {
+                property?.let { property ->
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState())
+                        ) {
 
 
-                Spacer(modifier = Modifier.height(DpDimensions.Small))
+                            Spacer(modifier = Modifier.height(DpDimensions.Small))
 
-                ImagesPager(images = photos, pagerState = pagerState)
+                            ImagesPager(
+                                images = property.photos,
+                                pagerState = rememberPagerState {
+                                    property.photos.size
+                                })
 
-                Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+                            Spacer(modifier = Modifier.height(DpDimensions.Dp20))
 
-                Column(
-                    modifier = Modifier
-                        .padding(DpDimensions.Normal)
-                        .fillMaxWidth()
-                ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(DpDimensions.Normal)
+                                    .fillMaxWidth()
+                            ) {
 
-                    InfoSection(property = property)
+                                InfoSection(property = property)
 
-                    Spacer(modifier = Modifier.height(DpDimensions.Dp30))
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp30))
 
-                    Divider(color = MaterialTheme.colorScheme.outline)
+                                Divider(color = MaterialTheme.colorScheme.outline)
 
-                    Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-                    OwnerSection(property = property, modifier = Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-                    DescriptionSection(property = property, modifier = Modifier.fillMaxWidth())
-                    Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-                    FacilitiesSection(property = property, modifier = Modifier.fillMaxWidth())
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+                                OwnerSection(
+                                    property = property,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+                                DescriptionSection(
+                                    property = property,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+                                FacilitiesSection(
+                                    property = property,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+                                LocationSection(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    property = property
+                                )
+                            }
+                        }
+
+                        BottomSection(property = property, onClick = {
+
+                        })
+                    }
                 }
+            } else {
+                ErrorComponent(errorMessage = "Error Loading Listing")
             }
 
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(
-                    topStart = DpDimensions.Small,
-                    topEnd = DpDimensions.Small
-                ),
-                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline)
+//            when (state.state) {
+//                is StateWrapper.Loading -> {
+//                    LoadingComponent()
+//                }
+//
+//                is StateWrapper.Success -> {
+//
+//
+//                    if ((state.state as StateWrapper.Success<Property?>).data != null) {
+//                        (state.state as StateWrapper.Success<Property?>).data?.let { property ->
+//                            Column(modifier = Modifier.fillMaxSize()) {
+//                                Column(
+//                                    modifier = Modifier
+//                                        .weight(1f)
+//                                        .verticalScroll(rememberScrollState())
+//                                ) {
+//
+//
+//                                    Spacer(modifier = Modifier.height(DpDimensions.Small))
+//
+//                                    ImagesPager(
+//                                        images = property.photos,
+//                                        pagerState = rememberPagerState {
+//                                            property.photos.size
+//                                        })
+//
+//                                    Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+//
+//                                    Column(
+//                                        modifier = Modifier
+//                                            .padding(DpDimensions.Normal)
+//                                            .fillMaxWidth()
+//                                    ) {
+//
+//                                        InfoSection(property = property)
+//
+//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp30))
+//
+//                                        Divider(color = MaterialTheme.colorScheme.outline)
+//
+//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+//                                        OwnerSection(
+//                                            property = property,
+//                                            modifier = Modifier.fillMaxWidth()
+//                                        )
+//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+//                                        DescriptionSection(
+//                                            property = property,
+//                                            modifier = Modifier.fillMaxWidth()
+//                                        )
+//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+//                                        FacilitiesSection(
+//                                            property = property,
+//                                            modifier = Modifier.fillMaxWidth()
+//                                        )
+//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
+//                                        LocationSection(
+//                                            modifier = Modifier.fillMaxWidth(),
+//                                            property = property
+//                                        )
+//                                    }
+//                                }
+//
+//                                BottomSection(property = property, onClick = {
+//
+//                                })
+//                            }
+//                        }
+//                    } else {
+//                        ErrorComponent(errorMessage = "Error Loading Listing")
+//                    }
+//                }
+//
+//                is StateWrapper.Failure -> {
+//                    ErrorComponent(errorMessage = (state.state as StateWrapper.Failure).errorMessage)
+//                }
+//
+//                is StateWrapper.Empty -> {}
+//            }
+
+
+        }
+
+    }
+
+
+}
+
+
+@Composable
+fun LoadingComponent() {
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        BallSpinFadeLoaderProgressIndicator(
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(50.dp)
+        )
+
+    }
+
+}
+
+
+@Composable
+fun ErrorComponent(errorMessage: String) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(DpDimensions.Dp20),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(width = 1.dp, color = Color.Red),
+            shape = RoundedCornerShape(DpDimensions.Small)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(DpDimensions.Dp20)
+            ) {
+                Text(
+                    text = errorMessage,
+                    color = MaterialTheme.colorScheme.inversePrimary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+            }
+        }
+
+    }
+
+}
+
+
+@Composable
+fun LocationSection(
+    modifier: Modifier = Modifier,
+    property: Property
+) {
+
+    val latLng = LatLng(property.geolocation.lat, property.geolocation.lon)
+    val cameraPosition = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(latLng, 10f)
+    }
+
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.location),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.inversePrimary
+        )
+
+        Spacer(modifier = Modifier.height(DpDimensions.Normal))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(DpDimensions.Small))
+        ) {
+
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPosition
             ) {
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(DpDimensions.Normal),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(DpDimensions.Small)) {
+                Marker(
+                    state = MarkerState(position = latLng),
+                    title = property.name,
+                    snippet = "Property Location"
+                )
+
+            }
+
+        }
+
+
+    }
+}
+
+
+@Composable
+fun BottomSection(
+    property: Property,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.background,
+        shadowElevation = DpDimensions.Small
+    ) {
+        Column {
+            Divider(color = MaterialTheme.colorScheme.outline)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(DpDimensions.Normal),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(DpDimensions.Smallest)) {
+                    Text(
+                        text = "Price",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.inversePrimary
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "Price",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = property.price.toString(),
+                            style = MaterialTheme.typography.headlineLarge,
                             color = MaterialTheme.colorScheme.inversePrimary
                         )
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = property.price.toString(),
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = MaterialTheme.colorScheme.inversePrimary
-                            )
-
-                            Text(
-                                text = "/ night",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.inversePrimary
-                            )
-                        }
+                        Text(
+                            text = "/ night",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.inversePrimary
+                        )
                     }
-                    
-                    Spacer(modifier = Modifier.width(DpDimensions.Dp100))
-
-
-                    PrimaryButton(
-                        label = "Book Now",
-                        disabledColor = Grey74,
-                        modifier = Modifier.weight(1f),
-                        onClick = {}
-                    )
-
-
                 }
+
+                Spacer(modifier = Modifier.width(DpDimensions.Dp100))
+
+
+                PrimaryButton(
+                    label = "Book Now",
+                    disabledColor = Grey74,
+                    modifier = Modifier.weight(1f),
+                    onClick = onClick
+                )
+
 
             }
 
         }
 
     }
-
 
 }
 
@@ -541,7 +783,7 @@ fun AmenityComponent(
 
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.inversePrimary
         )
 

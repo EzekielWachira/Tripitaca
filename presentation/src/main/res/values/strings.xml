@@ -15,4 +15,6 @@
     <string name="overview">Overview</string>
     <string name="read_less">Read less</string>
     <string name="read_more">Read more…</string>
+    <string name="location">Location</string>
+    <string name="details">Details</string>
 </resources>

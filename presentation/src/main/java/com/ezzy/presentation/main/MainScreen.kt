@@ -10,9 +10,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.navigation.BottomNavBar
 import com.ezzy.presentation.navigation.Screens
 import com.ezzy.presentation.navigation.Screens.Companion.MAIN
@@ -28,6 +30,8 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val viewModel: DetailViewModel = hiltViewModel()
 
 
     bottomBarVisible = when (navBackStackEntry?.destination?.route) {
@@ -53,7 +57,7 @@ fun MainScreen() {
             startDestination = Screens.Main.route,
             modifier = Modifier.padding(paddingValues)
         ) {
-            mainNavGraph(navController = navController, isSystemInDarkTheme = false)
+            mainNavGraph(navController = navController, isSystemInDarkTheme = false, viewModel)
         }
     }
 

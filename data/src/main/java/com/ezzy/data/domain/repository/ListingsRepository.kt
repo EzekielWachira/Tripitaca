@@ -10,4 +10,6 @@ interface ListingsRepository {
 
     suspend fun filterListing(filters: List<String>): List<Property>
 
+    suspend fun getListing(id: String): Property?
+
 }

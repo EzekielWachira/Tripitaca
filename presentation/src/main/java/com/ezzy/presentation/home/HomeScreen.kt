@@ -42,6 +42,7 @@ import com.ezzy.presentation.home.components.HomeTopBar
 import com.ezzy.presentation.home.components.ListingItem
 import com.ezzy.presentation.home.components.SearchFilterComponent
 import com.ezzy.presentation.home.viewmodel.HomeViewModel
+import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.quizzo.ui.common.state.SearchState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -50,7 +51,8 @@ private const val TAG = "HomeScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSystemInDarkTheme()) {
+fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSystemInDarkTheme(),
+               detailViewModel: DetailViewModel) {
 
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkMode
@@ -143,7 +145,11 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
                                         (listingState.state as StateWrapper.Success<List<Property>>)
                                             .data.take(5)
                                     ) {
-                                        FeaturedItem(listing = it)
+                                        FeaturedItem(listing = it,
+                                            onClick = {_ ->
+                                                detailViewModel.setProperty(it)
+                                                navController.navigate("details/{${it.id}}")
+                                            })
                                     }
                                 }
                             }
@@ -182,7 +188,11 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
                         ) {
                             ListingItem(
                                 listing = it,
-                                modifier = Modifier.padding(DpDimensions.Normal)
+                                modifier = Modifier.padding(DpDimensions.Normal),
+                                onClick = {_ ->
+                                    detailViewModel.setProperty(it)
+                                    navController.navigate("details/{${it.id}}")
+                                }
                             )
                         }
                     }

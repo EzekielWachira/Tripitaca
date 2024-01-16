@@ -12,6 +12,7 @@ sealed class Screens(val route: String, @StringRes val label: Int, @DrawableRes 
     object Inbox: Screens(INBOX, R.string.inbox, R.drawable.messages)
     object Profile: Screens(PROFILE, R.string.profile, R.drawable.profile)
     object Main: Screens(MAIN, R.string.main, R.drawable.profile)
+    object Details: Screens(DETAILS, R.string.details, R.drawable.placeholder_ic)
 
     companion object {
         const val HOME = "home"
@@ -20,6 +21,7 @@ sealed class Screens(val route: String, @StringRes val label: Int, @DrawableRes 
         const val INBOX = "inbox"
         const val PROFILE = "profile"
         const val MAIN = "main"
+        const val DETAILS = "details/{id}"
     }
 }
 
