@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,7 +27,9 @@ import com.ezzy.data.data.GoogleAuthUiClient
 import com.ezzy.designsystem.theme.TripitacaTheme
 import com.ezzy.presentation.auth.LoginScreen
 import com.ezzy.presentation.auth.viewmodel.LoginViewModel
+import com.ezzy.presentation.booking.BookingScreen
 import com.ezzy.presentation.listing_detail.DetailScreen
+import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.main.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,11 +44,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val viewModel: DetailViewModel = hiltViewModel()
             TripitacaTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+//                    BookingScreen(rememberNavController(), detailViewModel =  viewModel)
                     MainScreen()
 //                    val navController = rememberNavController()
 //                    NavHost(navController = navController, startDestination = "login") {

@@ -29,13 +29,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -71,6 +76,7 @@ import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
 import com.ezzy.presentation.listing_detail.components.PagerIndicator
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
+import com.ezzy.presentation.utils.formatTimeToSmallDate
 import com.ezzy.presentation.utils.smartTruncate
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.model.CameraPosition
@@ -180,11 +186,19 @@ fun DetailScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     property = property
                                 )
+
+                                Spacer(modifier = Modifier.height(DpDimensions.Dp30))
+                                AvailabilitySection(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    property = property
+                                )
+
+
                             }
                         }
 
                         BottomSection(property = property, onClick = {
-
+                            navController.navigate("booking/${property.id}")
                         })
                     }
                 }
@@ -334,6 +348,50 @@ fun ErrorComponent(errorMessage: String) {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AvailabilitySection(
+    modifier: Modifier = Modifier,
+    property: Property
+) {
+
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = null,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return !property.booked_dates.contains(utcTimeMillis.formatTimeToSmallDate()) &&
+                        utcTimeMillis > System.currentTimeMillis()
+            }
+        }
+    )
+
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.availability),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.inversePrimary
+        )
+
+        Spacer(modifier = Modifier.height(DpDimensions.Normal))
+
+        DatePicker(
+            title = null,
+            headline = null,
+            showModeToggle = false,
+            state = state,
+            colors = DatePickerDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.background,
+                weekdayContentColor = MaterialTheme.colorScheme.onPrimary,
+                dayContentColor = MaterialTheme.colorScheme.inversePrimary,
+                selectedDayContainerColor = MaterialTheme.colorScheme.onPrimary,
+                todayContentColor = MaterialTheme.colorScheme.onPrimary,
+                selectedDayContentColor = Color.White,
+                todayDateBorderColor = MaterialTheme.colorScheme.onPrimary
+            )
+        )
+
+    }
+}
 
 @Composable
 fun LocationSection(

@@ -1,9 +1,12 @@
 package com.ezzy.presentation.navigation.graphs
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.ezzy.presentation.booking.BookingScreen
 import com.ezzy.presentation.explore.ExploreScreen
 import com.ezzy.presentation.favorite.FavoriteScreen
 import com.ezzy.presentation.home.HomeScreen
@@ -15,6 +18,7 @@ import com.ezzy.presentation.profile.ProfileScreen
 import com.ezzy.presentation.utils.slideInVerticallyEnterAnimation
 import com.ezzy.presentation.utils.slideOutVerticallyEnterAnimation
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainNavGraph(
     navController: NavController, isSystemInDarkTheme: Boolean,
     viewModel: DetailViewModel
@@ -38,6 +42,15 @@ fun NavGraphBuilder.mainNavGraph(
                 navController = navController,
                 propertyId = navBackStackEntry.arguments?.getString("id"),
                 viewModel = viewModel
+            )
+        }
+
+        composable(route = Screens.Booking.route,
+            enterTransition = { slideInVerticallyEnterAnimation() },
+            exitTransition = { slideOutVerticallyEnterAnimation() }) { navBackStackEntry ->
+            BookingScreen(
+                navController = navController,
+                detailViewModel = viewModel
             )
         }
 

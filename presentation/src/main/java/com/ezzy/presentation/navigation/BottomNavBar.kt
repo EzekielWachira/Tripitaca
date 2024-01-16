@@ -75,7 +75,7 @@ fun BottomNavBar(
                         },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.Black,
-                            indicatorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f),
+                            indicatorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                             selectedTextColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onPrimary else Color.Black
                         )
                     )

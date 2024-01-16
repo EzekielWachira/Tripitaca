@@ -1,5 +1,6 @@
 package com.ezzy.presentation.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.core.tween
@@ -13,6 +14,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 private val PUNCTUATION = listOf(", ", "; ", ": ", " ")
 fun String.smartTruncate(length: Int): String {
@@ -66,4 +71,40 @@ inline fun<reified  T: ViewModel> NavBackStackEntry.sharedViewModel(
     }
     return hiltViewModel(parentEntry)
 
+}
+
+
+fun String.dateStringToLong(): Long {
+    val pattern = "MM/dd/yyyy"
+    val sdf = SimpleDateFormat(pattern, Locale.getDefault())
+
+    try {
+        val date = sdf.parse(this)
+        return date?.time ?: 0L
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    return 0L
+}
+
+@SuppressLint("SimpleDateFormat")
+fun Long.formatTimeToSmallDate(): String {
+    val date = Date(this)
+    val format = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return format.format(date)
+}
+
+
+fun Long.getDate(): Long {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+
+    // Set time components to zero
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+
+    return calendar.timeInMillis
 }

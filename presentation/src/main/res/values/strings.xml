@@ -17,4 +17,8 @@
     <string name="read_more">Read more…</string>
     <string name="location">Location</string>
     <string name="details">Details</string>
+    <string name="check_out">Check out</string>
+    <string name="check_in">Check in</string>
+    <string name="booking">Booking</string>
+    <string name="availability">Availability</string>
 </resources>

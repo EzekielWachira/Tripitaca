@@ -53,7 +53,8 @@ fun FilterBottomSheet(
         onDismissRequest = { onDismiss() },
         shape = RoundedCornerShape(topStart = cornerRadius, topEnd = cornerRadius),
         sheetState = bottomSheetState,
-        modifier = modifier
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background
     ) {
 
         Column(

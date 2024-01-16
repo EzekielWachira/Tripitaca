@@ -51,8 +51,10 @@ private const val TAG = "HomeScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSystemInDarkTheme(),
-               detailViewModel: DetailViewModel) {
+fun HomeScreen(
+    navController: NavController, isSystemInDarkMode: Boolean = isSystemInDarkTheme(),
+    detailViewModel: DetailViewModel
+) {
 
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkMode
@@ -146,7 +148,7 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
                                             .data.take(5)
                                     ) {
                                         FeaturedItem(listing = it,
-                                            onClick = {_ ->
+                                            onClick = { _ ->
                                                 detailViewModel.setProperty(it)
                                                 navController.navigate("details/{${it.id}}")
                                             })
@@ -189,7 +191,7 @@ fun HomeScreen(navController: NavController, isSystemInDarkMode: Boolean = isSys
                             ListingItem(
                                 listing = it,
                                 modifier = Modifier.padding(DpDimensions.Normal),
-                                onClick = {_ ->
+                                onClick = { _ ->
                                     detailViewModel.setProperty(it)
                                     navController.navigate("details/{${it.id}}")
                                 }
