@@ -2,6 +2,14 @@ package com.ezzy.presentation.booking
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,12 +20,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -25,6 +35,7 @@ import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -38,10 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.ezzy.data.domain.model.Property
@@ -52,6 +65,9 @@ import com.ezzy.designsystem.theme.DarkBlue
 import com.ezzy.designsystem.theme.DisabledColor
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
+import com.ezzy.presentation.booking.state.GuestState
+import com.ezzy.presentation.booking.viewmodel.BookingViewModel
+import com.ezzy.presentation.booking.viewmodel.GuestType
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.utils.formatTimeToSmallDate
 import com.ezzy.presentation.utils.smartTruncate
@@ -71,6 +87,8 @@ fun BookingScreen(
     val useDarkIcons = !isSystemInDarkMode
 
     val property by detailViewModel.property.collectAsStateWithLifecycle()
+    val bookingViewModel: BookingViewModel = hiltViewModel()
+    val guestState by bookingViewModel.guestState.collectAsStateWithLifecycle()
 
 
     val bottomSheetState = rememberModalBottomSheetState()
@@ -122,10 +140,13 @@ fun BookingScreen(
                 .fillMaxSize()
         ) {
 
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(DpDimensions.Normal)
-                .weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(DpDimensions.Normal)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(DpDimensions.Normal)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -158,14 +179,46 @@ fun BookingScreen(
                     )
 
                 }
+
+
+                GuestSection(
+                    guestState = guestState,
+                    property = property!!,
+                    modifier = Modifier.fillMaxWidth(),
+                    onAdd = { guestType, value ->
+                        bookingViewModel.setGuest(
+                            when (guestType) {
+                                GuestType.ADULT -> guestState.adults + value
+                                GuestType.CHILDREN -> guestState.children + value
+                                GuestType.INFANT -> guestState.infant + value
+                            }, guestType
+                        )
+                    },
+                    onMinus = { guestType, value ->
+                        bookingViewModel.setGuest(
+                            when (guestType) {
+                                GuestType.ADULT -> guestState.adults - value
+                                GuestType.CHILDREN -> guestState.children - value
+                                GuestType.INFANT -> guestState.infant - value
+                            }, guestType
+                        )
+                    }
+                )
             }
 
-            Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background,
-                shadowElevation = DpDimensions.Small) {
-                CustomPadding(verticalPadding = DpDimensions.Dp30, horizontalPadding = DpDimensions.Dp20) {
-                    PrimaryButton(label = "Continue", disabledColor = DisabledColor,
+            Surface(
+                modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background,
+                shadowElevation = DpDimensions.Small
+            ) {
+                CustomPadding(
+                    verticalPadding = DpDimensions.Dp30,
+                    horizontalPadding = DpDimensions.Dp20
+                ) {
+                    PrimaryButton(
+                        label = "Continue", disabledColor = DisabledColor,
                         onClick = {},
-                        modifier = Modifier.fillMaxWidth())
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
 
@@ -200,8 +253,239 @@ fun BookingScreen(
 @Composable
 fun GuestSection(
     modifier: Modifier = Modifier,
-
+    guestState: GuestState,
+    property: Property,
+    onAdd: (guestType: GuestType, value: Int) -> Unit = { _, _ -> },
+    onMinus: (guestType: GuestType, value: Int) -> Unit = { _, _ -> },
 ) {
+
+    var isInEditMode by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val density = LocalDensity.current
+
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(DpDimensions.Normal)) {
+
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Quests",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary
+                )
+                Text(
+                    text = "Adults ${guestState.adults}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary
+                )
+            }
+
+            TextButton(
+                onClick = {
+                    isInEditMode = !isInEditMode
+                },
+                shape = CircleShape,
+                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.onPrimary)
+            ) {
+                CustomPadding(verticalPadding = 0.dp, horizontalPadding = DpDimensions.Normal) {
+                    Text(
+                        text = if (isInEditMode) stringResource(R.string.done) else stringResource(R.string.edit),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+
+            }
+        }
+
+
+        AnimatedVisibility(visible = isInEditMode,
+            enter = slideInVertically {
+                with(density) { -40.dp.roundToPx() }
+            } + expandVertically(expandFrom = Alignment.Top)
+                    + fadeIn(initialAlpha = .3f),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(DpDimensions.Small)
+            ) {
+                GuestCounter(
+                    guestType = GuestType.ADULT,
+                    guestState = guestState,
+                    property = property,
+                    onAdd = { guestType, value ->
+                        onAdd(guestType, value)
+                    },
+                    onMinus = { guestType, value ->
+                        onMinus(guestType, value)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                GuestCounter(
+                    guestType = GuestType.CHILDREN,
+                    guestState = guestState,
+                    property = property,
+                    onAdd = { guestType, value ->
+                        onAdd(guestType, value)
+                    },
+                    onMinus = { guestType, value ->
+                        onMinus(guestType, value)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+
+                GuestCounter(guestType = GuestType.INFANT,
+                    guestState = guestState,
+                    property = property,
+                    onAdd = { guestType, value ->
+                        onAdd(guestType, value)
+                    },
+                    onMinus = { guestType, value ->
+                        onMinus(guestType, value)
+                    }
+                )
+
+
+            }
+
+        }
+
+
+    }
+
+}
+
+
+@Composable
+fun GuestCounter(
+    modifier: Modifier = Modifier,
+    guestType: GuestType,
+    guestState: GuestState,
+    onAdd: (guestType: GuestType, value: Int) -> Unit = { _, _ -> },
+    onMinus: (guestType: GuestType, value: Int) -> Unit = { _, _ -> },
+    property: Property
+) {
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = when (guestType) {
+                    GuestType.ADULT -> stringResource(R.string.adults)
+                    GuestType.CHILDREN -> stringResource(R.string.children)
+                    GuestType.INFANT -> stringResource(R.string.infant)
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.inversePrimary
+            )
+            Text(
+                text = when (guestType) {
+                    GuestType.ADULT -> stringResource(R.string.age_13)
+                    GuestType.CHILDREN -> stringResource(R.string.ages_2_12)
+                    GuestType.INFANT -> stringResource(R.string.under_2)
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.inversePrimary
+            )
+        }
+
+
+        AddMinusButtons(
+            guestState = guestState, guestType = guestType,
+            onAddClick = { value, guestType ->
+                onAdd(guestType, value)
+            },
+            onMinusClick = { value, guestType ->
+                onMinus(guestType, value)
+            },
+            property = property
+        )
+
+
+    }
+
+}
+
+@Composable
+fun AddMinusButtons(
+    modifier: Modifier = Modifier,
+    onAddClick: (value: Int, guestType: GuestType) -> Unit = { _, _ -> },
+    onMinusClick: (value: Int, guestType: GuestType) -> Unit = { _, _ -> },
+    guestState: GuestState,
+    guestType: GuestType,
+    property: Property
+) {
+
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(DpDimensions.Small)
+    ) {
+        IconButton(
+            onClick = {
+                onMinusClick(
+                    when (guestType) {
+                        GuestType.ADULT -> guestState.adults - 1
+                        GuestType.CHILDREN -> guestState.children - 1
+                        GuestType.INFANT -> guestState.infant - 1
+                    }, guestType
+                )
+            },
+            enabled = when (guestType) {
+                GuestType.ADULT -> {
+                    guestState.adults > 0
+                }
+
+                GuestType.CHILDREN -> {
+                    guestState.children > 0
+                }
+
+                GuestType.INFANT -> {
+                    guestState.infant > 0
+                }
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.minus), contentDescription = "Minus Icon",
+                modifier = Modifier.size(DpDimensions.Dp20)
+            )
+        }
+
+        Text(
+            text = (when (guestType) {
+                GuestType.ADULT -> guestState.adults
+                GuestType.CHILDREN -> guestState.children
+                GuestType.INFANT -> guestState.infant
+            }).toString(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.inversePrimary
+        )
+
+        IconButton(
+            onClick = {
+                onAddClick(
+                    when (guestType) {
+                        GuestType.ADULT -> guestState.adults + 1
+                        GuestType.CHILDREN -> guestState.children + 1
+                        GuestType.INFANT -> guestState.infant + 1
+                    }, guestType
+                )
+            },
+            enabled = property.accommodates > (guestState.adults + guestState.children + guestState.infant)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.add), contentDescription = "Add Icon",
+                modifier = Modifier.size(DpDimensions.Dp20)
+            )
+        }
+    }
 
 }
 

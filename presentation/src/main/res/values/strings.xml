@@ -21,4 +21,12 @@
     <string name="check_in">Check in</string>
     <string name="booking">Booking</string>
     <string name="availability">Availability</string>
+    <string name="adults">Adults</string>
+    <string name="age_13">Age 13+</string>
+    <string name="children">Children</string>
+    <string name="infant">Infant</string>
+    <string name="ages_2_12">Ages (2 - 12)</string>
+    <string name="under_2">Under 2</string>
+    <string name="done">Done</string>
+    <string name="edit">Edit</string>
 </resources>
