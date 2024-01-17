@@ -4,9 +4,11 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
 //    id("kotlin-kapt")
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.sentry.android)
     alias(libs.plugins.ksp)
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
 }
 
 android {
@@ -28,6 +30,15 @@ android {
 
     buildTypes {
         release {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+        getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(
@@ -88,4 +99,13 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+}
+
+sentry {
+    org.set("droid-society")
+    projectName.set("tripitaca")
+
+    // this will upload your source code to Sentry to show it as part of the stack traces
+    // disable if you don't want to expose your sources
+    includeSourceContext.set(true)
 }

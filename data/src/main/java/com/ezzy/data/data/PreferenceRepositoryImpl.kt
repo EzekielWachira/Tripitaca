@@ -13,16 +13,15 @@ import com.ezzy.data.domain.model.Filter
 import com.ezzy.data.domain.model.UserData
 import com.ezzy.data.domain.repository.PreferenceRepository
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
-import java.lang.reflect.Modifier.TRANSIENT
 
 
-class PreferenceRepositoryImpl(private val context: Context, private val gson: Gson) : PreferenceRepository {
+class PreferenceRepositoryImpl(private val context: Context, private val gson: Gson) :
+    PreferenceRepository {
 
     private val Context.dataStore: DataStore<Preferences>
             by preferencesDataStore(name = "tripitaca")
@@ -72,7 +71,7 @@ class PreferenceRepositoryImpl(private val context: Context, private val gson: G
     }
 
     override suspend fun saveUserData(userData: UserData) {
-        context.dataStore.edit { preference->
+        context.dataStore.edit { preference ->
             preference[PreferenceKeys.user] = gson.toJson(userData)
         }
     }

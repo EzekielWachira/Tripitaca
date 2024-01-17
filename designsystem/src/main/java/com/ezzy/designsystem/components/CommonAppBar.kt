@@ -17,29 +17,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.ezzy.designsystem.utils.DpDimensions
 
-@Composable
-fun CommonAppBar(
-    modifier: Modifier = Modifier, onBackClicked: () -> Unit = {},
-    backIcon: ImageVector = Icons.Outlined.ArrowBack
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .padding(
-                all = 16.dp
-            )
-    ) {
-
-        IconButton(onClick = { onBackClicked() }) {
-            Icon(
-                imageVector = backIcon,
-                contentDescription = "Back arrow",
-                tint = MaterialTheme.colorScheme.inversePrimary
-            )
-        }
-
-    }
-}
+//@Composable
+//fun CommonAppBar(
+//    onBackClicked: () -> Unit = {}, backIcon: ImageVector = Icons.Outlined.ArrowBack
+//) {
+//    Row(
+//        verticalAlignment = Alignment.CenterVertically,
+//        modifier = Modifier
+//            .padding(
+//                all = 16.dp
+//            )
+//    ) {
+//
+//        IconButton(onClick = { onBackClicked() }) {
+//            Icon(
+//                imageVector = backIcon,
+//                contentDescription = "Back arrow",
+//                tint = MaterialTheme.colorScheme.inversePrimary
+//            )
+//        }
+//
+//    }
+//}
 
 @Composable
 fun CommonAppBar(
@@ -50,7 +49,7 @@ fun CommonAppBar(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .padding(
                 all = DpDimensions.Smallest
             )

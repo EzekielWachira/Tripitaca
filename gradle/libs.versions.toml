@@ -56,6 +56,7 @@ maps-compose = "4.3.0"
 google-services = "4.4.0"
 secret-gradle-plugin="2.0.1"
 material3 = "1.2.0-beta01"
+sentry-android ="4.2.0"
 
 
 [libraries]
@@ -154,6 +155,7 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt-andr
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = {id = "com.google.gms.google-services", version.ref = "google-services" }
 secret-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secret-gradle-plugin" }
+sentry-android = {id  = "io.sentry.android.gradle", version.ref  = "sentry-android" }
 
 [bundles]
 room = ["androidx-room-ktx", "androidx-room-runtime", "androidx-room-paging"]
