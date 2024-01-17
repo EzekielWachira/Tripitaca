@@ -1,6 +1,5 @@
 package com.ezzy.presentation.home.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ezzy.data.domain.model.Filter
@@ -12,10 +11,10 @@ import com.ezzy.data.utils.StateWrapper
 import com.ezzy.presentation.home.state.ListingsState
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,6 +22,7 @@ import javax.inject.Inject
 
 
 private const val TAG = "HomeViewModel"
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getAllListingUseCase: GetAllListingUseCase,
@@ -53,13 +53,18 @@ class HomeViewModel @Inject constructor(
 
     fun getListings() {
         viewModelScope.launch {
-            getAllListingUseCase.invoke().collectLatest { state ->
-                _listingState.update {
-                    listingState.value.copy(
-                        state = state
-                    )
+            val filters = filters.firstOrNull()
+            filters?.let {
+                getAllListingUseCase.invoke(it.filter { fl -> fl.isSelected }).collectLatest { state ->
+                    _listingState.update {
+                        listingState.value.copy(
+                            state = state
+                        )
+                    }
                 }
+
             }
+
         }
     }
 
@@ -72,6 +77,8 @@ class HomeViewModel @Inject constructor(
     fun applyFilter(filter: Filter, filters: List<Filter>) {
         viewModelScope.launch {
             preferenceRepository.applyFilter(filter, filters)
+            delay(500)
+            getListings()
         }
     }
 

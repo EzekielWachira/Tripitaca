@@ -6,6 +6,8 @@ interface ListingsRepository {
 
     suspend fun getAllListings(): List<Property>
 
+    suspend fun getFilteredListings(filters: List<String>): List<Property>
+
     suspend fun searchListing(query: String): List<Property>
 
     suspend fun filterListing(filters: List<String>): List<Property>

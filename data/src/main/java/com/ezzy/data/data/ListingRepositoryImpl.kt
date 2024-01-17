@@ -33,6 +33,32 @@ class ListingRepositoryImpl(private val context: Context): ListingsRepository {
         return emptyList()
     }
 
+
+    override suspend fun getFilteredListings(filters: List<String>): List<Property> {
+        try {
+            val str = context.assets.open("listings.json")
+                .bufferedReader()
+                .use { it.readText() }
+
+            val listings = Gson().fromJson(str, Listings::class.java).results
+            val filteredListing = listings.filter { property ->
+                property.amenities?.let { amenities ->
+                    filters.any { amenity ->
+                        amenities.map { it.lowercase() }.contains(amenity.lowercase())
+                    }
+                } ?: false
+            }
+
+
+            return filteredListing
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(TAG, "getAllListings: ", e)
+        }
+
+        return emptyList()
+    }
+
     override suspend fun searchListing(query: String): List<Property> {
         TODO("Not yet implemented")
     }

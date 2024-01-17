@@ -523,9 +523,9 @@ fun FacilitiesSection(
             horizontalArrangement = Arrangement.spacedBy(DpDimensions.Dp20),
             verticalArrangement = Arrangement.spacedBy(DpDimensions.Normal)
         ) {
-            property.amenities.filter {
+            property.amenities?.filter {
                 !it.contains("missing", ignoreCase = true)
-            }.forEach { amenity ->
+            }?.forEach { amenity ->
                 FacilityItem(icon = amenity.getIcon(), title = amenity)
             }
         }
@@ -872,7 +872,7 @@ fun RatingComponent(
         Text(
             text = stringResource(
                 id = R.string.reviews,
-                property.reviews_per_month.toFloat(),
+                property.reviews_per_month?.toFloat() ?: 0f,
                 property.number_of_reviews.toFloat()
             ),
             style = MaterialTheme.typography.titleMedium,
