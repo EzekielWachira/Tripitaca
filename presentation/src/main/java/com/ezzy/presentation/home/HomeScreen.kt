@@ -74,6 +74,7 @@ fun HomeScreen(
     val viewModel: HomeViewModel = hiltViewModel()
     val listingState by viewModel.listingState.collectAsStateWithLifecycle()
     val filters by viewModel.filters.collectAsStateWithLifecycle(initialValue = emptyList())
+    val user by viewModel.firebaseUser.collectAsStateWithLifecycle(initialValue = null)
 
 
     SideEffect {
@@ -92,7 +93,8 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { }
+                onClick = { },
+                userData = user
             )
         }
     ) { paddingValues ->

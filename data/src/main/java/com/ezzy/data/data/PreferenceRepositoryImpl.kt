@@ -10,15 +10,19 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.ezzy.data.data.PreferenceRepositoryImpl.PreferenceKeys.amenitiesFilters
 import com.ezzy.data.domain.model.Filter
+import com.ezzy.data.domain.model.UserData
 import com.ezzy.data.domain.repository.PreferenceRepository
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import java.lang.reflect.Modifier.TRANSIENT
 
-class PreferenceRepositoryImpl(private val context: Context) : PreferenceRepository {
+
+class PreferenceRepositoryImpl(private val context: Context, private val gson: Gson) : PreferenceRepository {
 
     private val Context.dataStore: DataStore<Preferences>
             by preferencesDataStore(name = "tripitaca")
@@ -27,6 +31,7 @@ class PreferenceRepositoryImpl(private val context: Context) : PreferenceReposit
         val isUserLoggedIn = booleanPreferencesKey("is_user_logged_in")
         val isDarkModeEnabled = booleanPreferencesKey("is_dark_mode_enabled")
         val amenitiesFilters = stringPreferencesKey("filters")
+        val user = stringPreferencesKey("user_data")
     }
 
     override suspend fun saveFilters(filters: List<Filter>) {
@@ -66,6 +71,12 @@ class PreferenceRepositoryImpl(private val context: Context) : PreferenceReposit
         }
     }
 
+    override suspend fun saveUserData(userData: UserData) {
+        context.dataStore.edit { preference->
+            preference[PreferenceKeys.user] = gson.toJson(userData)
+        }
+    }
+
     override suspend fun setDarkMode(isEnabled: Boolean) {
         context.dataStore.edit { preference ->
             preference[PreferenceKeys.isDarkModeEnabled] = isEnabled
@@ -87,5 +98,14 @@ class PreferenceRepositoryImpl(private val context: Context) : PreferenceReposit
                 else throw exception
             }.map { preferences ->
                 preferences[PreferenceKeys.isDarkModeEnabled] ?: false
+            }
+
+    override val user: Flow<UserData?>
+        get() = context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) emit(emptyPreferences())
+                else throw exception
+            }.map { preferences ->
+                gson.fromJson(preferences[PreferenceKeys.user], UserData::class.java) ?: null
             }
 }

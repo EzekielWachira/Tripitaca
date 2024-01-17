@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth.ktx)
     implementation(libs.msz.progress.indicator)
 //    implementation(libs.multidatepicker)
     implementation(libs.appcompat)

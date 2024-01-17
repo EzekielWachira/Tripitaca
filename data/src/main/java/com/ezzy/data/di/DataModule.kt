@@ -8,11 +8,14 @@ import com.ezzy.data.domain.repository.ListingsRepository
 import com.ezzy.data.domain.repository.PreferenceRepository
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.lang.reflect.Modifier
 import javax.inject.Singleton
 
 @Module
@@ -26,8 +29,9 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun providePreferencesRepository(@ApplicationContext context: Context): PreferenceRepository =
-        PreferenceRepositoryImpl(context)
+    fun providePreferencesRepository(@ApplicationContext context: Context,
+                                     gson: Gson): PreferenceRepository =
+        PreferenceRepositoryImpl(context, gson)
 
 
     @Provides
@@ -42,5 +46,14 @@ object DataModule {
         onTapClient: SignInClient
     ): GoogleAuthUiClient =
         GoogleAuthUiClient(context, onTapClient)
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
+            .excludeFieldsWithModifiers(Modifier.TRANSIENT) // STATIC|TRANSIENT in the default configuration
+            .create()
+    }
 
 }

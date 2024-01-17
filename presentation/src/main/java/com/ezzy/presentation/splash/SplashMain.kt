@@ -1,69 +1,59 @@
-package com.ezzy.presentation.main
+package com.ezzy.presentation.splash
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Screen
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.ezzy.presentation.auth.AuthScreen
-import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
-import com.ezzy.presentation.navigation.BottomNavBar
+import com.ezzy.presentation.main.MainScreen
 import com.ezzy.presentation.navigation.Screens
-import com.ezzy.presentation.navigation.Screens.Companion.MAIN
-import com.ezzy.presentation.navigation.graphs.mainNavGraph
+import com.ezzy.presentation.navigation.Screens.Companion.MAIN_APP
+import com.ezzy.presentation.navigation.graphs.splashNavGraph
 
 @Composable
-fun MainScreen() {
-
-    var bottomBarVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
+fun SplashMain(){
 
     val navController = rememberNavController()
 
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    Scaffold { paddingValues ->
 
-    val viewModel: DetailViewModel = hiltViewModel()
-
-
-    bottomBarVisible = when (navBackStackEntry?.destination?.route) {
-        Screens.Home.route -> true
-        Screens.Explore.route -> true
-        Screens.Favorites.route -> true
-        Screens.Inbox.route -> true
-        Screens.Profile.route -> true
-        else -> false
-    }
-
-    Scaffold(
-        bottomBar = {
-            BottomNavBar(
-                navController = navController,
-                visible = bottomBarVisible,
-                isSystemInDarkMode = isSystemInDarkTheme()
-            )
-        }
-    ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Main.route,
+            startDestination = Screens.SplashMain.route,
             modifier = Modifier.padding(paddingValues)
         ) {
-            mainNavGraph(navController = navController, isSystemInDarkTheme = false, viewModel)
+
+            splashNavGraph(navController)
+
+            navigation(
+                route = Screens.MainApp.route,
+                startDestination = Screens.Home.route
+            ) {
+                composable(route = Screens.Home.route,
+                    enterTransition = {
+                        slideInVertically(
+                            animationSpec = tween(700),
+                            initialOffsetY = { it }
+                        )
+                    },
+                    exitTransition = {
+                        slideOutVertically (
+                            animationSpec = tween(700),
+                            targetOffsetY = { it }
+                        )
+                    }) {
+                    MainScreen()
+                }
+            }
+
             navigation(
                 route = Screens.Auth.route,
                 startDestination = Screens.Authentication.route
@@ -84,6 +74,9 @@ fun MainScreen() {
                     AuthScreen()
                 }
             }
+
+
+
         }
     }
 

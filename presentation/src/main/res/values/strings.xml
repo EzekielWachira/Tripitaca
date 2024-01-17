@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="home">Home</string>
+    <string name="web_client_id">331123234303-8tltlbvlqvn18isocqmcg9ju3mh1kf6h.apps.googleusercontent.com</string>
     <string name="explore">Explore</string>
     <string name="favorites">Favorites</string>
     <string name="main">Main</string>
@@ -29,4 +30,15 @@
     <string name="under_2">Under 2</string>
     <string name="done">Done</string>
     <string name="edit">Edit</string>
+    <string name="app_name">Tripitaca</string>
+    <string name="splash">Slash Screen</string>
+    <string name="splash_main">Splash Screen Main</string>
+    <string name="main_app">Main App Navigation</string>
+    <string name="login">Login</string>
+    <string name="auth">Auth</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="logout">Logout</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes_logout">Yes, logout</string>
+    <string name="general">General</string>
 </resources>

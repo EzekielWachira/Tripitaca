@@ -31,6 +31,7 @@ import com.ezzy.presentation.booking.BookingScreen
 import com.ezzy.presentation.listing_detail.DetailScreen
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.main.MainScreen
+import com.ezzy.presentation.splash.SplashMain
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                    BookingScreen(rememberNavController(), detailViewModel =  viewModel)
-                    MainScreen()
+                    SplashMain()
 //                    val navController = rememberNavController()
 //                    NavHost(navController = navController, startDestination = "login") {
 //                        composable(route = "login") {

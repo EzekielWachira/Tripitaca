@@ -10,6 +10,7 @@ import com.ezzy.data.domain.repository.PreferenceRepository
 import com.ezzy.data.domain.usecase.GetAllListingUseCase
 import com.ezzy.data.utils.StateWrapper
 import com.ezzy.presentation.home.state.ListingsState
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +36,8 @@ class HomeViewModel @Inject constructor(
     val listingState get() = _listingState.asStateFlow()
 
     val filters = preferenceRepository.filters
+    val user = preferenceRepository.user
+    val firebaseUser = MutableStateFlow(FirebaseAuth.getInstance().currentUser)
 
     init {
         checkFilters()

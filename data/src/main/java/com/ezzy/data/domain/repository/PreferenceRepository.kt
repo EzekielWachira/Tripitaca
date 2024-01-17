@@ -1,6 +1,7 @@
 package com.ezzy.data.domain.repository
 
 import com.ezzy.data.domain.model.Filter
+import com.ezzy.data.domain.model.UserData
 import kotlinx.coroutines.flow.Flow
 
 interface PreferenceRepository {
@@ -15,7 +16,10 @@ interface PreferenceRepository {
 
     suspend fun setDarkMode(isEnabled: Boolean)
 
+    suspend fun saveUserData(userData: UserData)
+
     val isUserLoggedIn: Flow<Boolean>
     val isDarkModeEnabled: Flow<Boolean>
+    val user: Flow<UserData?>
 
 }
