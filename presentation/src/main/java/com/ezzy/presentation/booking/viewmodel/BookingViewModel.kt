@@ -14,12 +14,15 @@ class BookingViewModel @Inject constructor() : ViewModel() {
     private val _guestState = MutableStateFlow(GuestState())
     val guestState get() = _guestState.asStateFlow()
 
-    fun setGuest(numberOfGuest: Int, guestType: GuestType) {
+    fun setGuest(numberOfGuest: Int, guestType: GuestType, state: GuestState, event: Event) {
         when (guestType) {
             GuestType.ADULT -> {
                 _guestState.update {
                     guestState.value.copy(
-                        adults = numberOfGuest
+                        adults = when(event) {
+                            Event.ADD -> state.adults + numberOfGuest
+                            Event.SUBTRACT -> state.adults - numberOfGuest
+                        }
                     )
                 }
             }
@@ -27,7 +30,10 @@ class BookingViewModel @Inject constructor() : ViewModel() {
             GuestType.CHILDREN -> {
                 _guestState.update {
                     guestState.value.copy(
-                        children = numberOfGuest
+                        children = when(event) {
+                            Event.ADD -> state.children + numberOfGuest
+                            Event.SUBTRACT -> state.children - numberOfGuest
+                        }
                     )
                 }
             }
@@ -35,7 +41,10 @@ class BookingViewModel @Inject constructor() : ViewModel() {
             GuestType.INFANT -> {
                 _guestState.update {
                     guestState.value.copy(
-                        adults = numberOfGuest
+                        infant = when(event) {
+                            Event.ADD -> state.infant + numberOfGuest
+                            Event.SUBTRACT -> state.infant - numberOfGuest
+                        }
                     )
                 }
             }
@@ -49,4 +58,9 @@ enum class GuestType {
     ADULT,
     CHILDREN,
     INFANT
+}
+
+enum class Event {
+    ADD,
+    SUBTRACT
 }

@@ -20,12 +20,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DatePicker
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +40,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -52,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -67,9 +72,12 @@ import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
 import com.ezzy.presentation.booking.state.GuestState
 import com.ezzy.presentation.booking.viewmodel.BookingViewModel
+import com.ezzy.presentation.booking.viewmodel.Event
 import com.ezzy.presentation.booking.viewmodel.GuestType
+import com.ezzy.presentation.home.components.ListingItem
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.utils.formatTimeToSmallDate
+import com.ezzy.presentation.utils.getTotalDays
 import com.ezzy.presentation.utils.smartTruncate
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -110,6 +118,12 @@ fun BookingScreen(
         mutableLongStateOf(0L)
     }
 
+    val totalDays by rememberSaveable {
+        mutableLongStateOf(Pair(checkOutDate, checkInDate).getTotalDays())
+    }
+
+    val scrollState = rememberScrollState()
+    val density = LocalDensity.current
 
     SideEffect {
         systemUiController.setSystemBarsColor(
@@ -118,6 +132,8 @@ fun BookingScreen(
             darkIcons = useDarkIcons
         )
     }
+
+
 
 
 
@@ -136,48 +152,64 @@ fun BookingScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-
                 .fillMaxSize()
         ) {
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(scrollState)
                     .padding(DpDimensions.Normal)
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(DpDimensions.Normal)
             ) {
-                Row(
+
+                ListingItem(listing = property!!, modifier = Modifier.fillMaxWidth())
+
+                Spacer(modifier = Modifier.height(DpDimensions.Small))
+
+
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(DpDimensions.Normal)
+                    verticalArrangement = Arrangement.spacedBy(DpDimensions.Small)
                 ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(DpDimensions.Normal)
+                    ) {
 
-                    DateSelector(
-                        title = stringResource(R.string.check_in),
-                        placeholder = if (checkInDate != 0L)
-                            checkInDate.formatTimeToSmallDate()
-                        else stringResource(R.string.check_in),
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            isSheetOpen = true
-                            dateType = DateType.CHECK_IN
-                        }
-                    )
+                        DateSelector(
+                            title = stringResource(R.string.check_in),
+                            placeholder = if (checkInDate != 0L)
+                                checkInDate.formatTimeToSmallDate()
+                            else stringResource(R.string.check_in),
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                isSheetOpen = true
+                                dateType = DateType.CHECK_IN
+                            }
+                        )
 
 
-                    DateSelector(
-                        title = stringResource(R.string.check_out),
-                        placeholder = if (checkOutDate != 0L)
-                            checkOutDate.formatTimeToSmallDate()
-                        else stringResource(R.string.check_out),
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            isSheetOpen = true
-                            dateType = DateType.CHECK_OUT
-                        }
-                    )
+                        DateSelector(
+                            title = stringResource(R.string.check_out),
+                            placeholder = if (checkOutDate != 0L)
+                                checkOutDate.formatTimeToSmallDate()
+                            else stringResource(R.string.check_out),
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                isSheetOpen = true
+                                dateType = DateType.CHECK_OUT
+                            }
+                        )
 
+                    }
+
+//                    Text(text = "(${totalDays} days)",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = MaterialTheme.colorScheme.inversePrimary,
+//                        modifier = Modifier.align(Alignment.End))
                 }
 
 
@@ -187,23 +219,40 @@ fun BookingScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onAdd = { guestType, value ->
                         bookingViewModel.setGuest(
-                            when (guestType) {
-                                GuestType.ADULT -> guestState.adults + value
-                                GuestType.CHILDREN -> guestState.children + value
-                                GuestType.INFANT -> guestState.infant + value
-                            }, guestType
+                            numberOfGuest = value,
+                            guestType = guestType,
+                            state = guestState,
+                            event = Event.ADD
                         )
                     },
                     onMinus = { guestType, value ->
                         bookingViewModel.setGuest(
-                            when (guestType) {
-                                GuestType.ADULT -> guestState.adults - value
-                                GuestType.CHILDREN -> guestState.children - value
-                                GuestType.INFANT -> guestState.infant - value
-                            }, guestType
+                            numberOfGuest = value,
+                            guestType = guestType, state = guestState,
+                            event = Event.SUBTRACT
                         )
                     }
                 )
+
+                Spacer(modifier = Modifier.height(DpDimensions.Small))
+
+
+
+                AnimatedVisibility(visible = (checkInDate != 0L && checkOutDate != 0L),
+                    enter = slideInVertically {
+                        with(density) { -40.dp.roundToPx() }
+                    } + expandVertically(expandFrom = Alignment.Top)
+                            + fadeIn(initialAlpha = .3f),
+                    exit = slideOutVertically() + shrinkVertically() + fadeOut()
+                ) {
+                    TotalSection(
+                        guestState = guestState,
+                        checkInDate = checkInDate,
+                        checkOutDate = checkOutDate,
+                        property = property!!,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
 
             Surface(
@@ -223,30 +272,117 @@ fun BookingScreen(
             }
 
             if (isSheetOpen) {
-                DatePickerBottomSheet(title = when (dateType) {
-                    DateType.CHECK_IN -> stringResource(id = R.string.check_in)
-                    DateType.CHECK_OUT -> stringResource(id = R.string.check_out)
-                },
+                DatePickerBottomSheet(
                     bottomSheetState = bottomSheetState,
                     property = property!!,
                     onDismiss = {
                         isSheetOpen = false
                     },
-                    onSelectDate = { date ->
-                        when (dateType) {
-                            DateType.CHECK_IN -> {
-                                checkInDate = date
-                            }
-
-                            DateType.CHECK_OUT -> {
-                                checkOutDate = date
-                            }
-                        }
+                    onSelectDates = { dateIn, dateOut ->
+                        checkInDate = dateIn
+                        checkOutDate = dateOut
                         isSheetOpen = false
                     })
             }
         }
     }
+}
+
+
+@Composable
+fun TotalSection(
+    modifier: Modifier = Modifier,
+    guestState: GuestState,
+    checkInDate: Long,
+    checkOutDate: Long,
+    property: Property
+) {
+
+    Column(modifier = modifier) {
+
+        Text(
+            text = stringResource(R.string.price_details),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.inversePrimary
+        )
+
+        Spacer(modifier = Modifier.height(DpDimensions.Normal))
+
+        Column(
+            horizontalAlignment = Alignment.End, modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(DpDimensions.Small)
+        ) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Ksh ${property.price} x ${
+                        Pair(
+                            checkOutDate,
+                            checkInDate
+                        ).getTotalDays()
+                    }",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Ksh ${property.price * Pair(checkOutDate, checkInDate).getTotalDays()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary,
+                    textAlign = TextAlign.End
+                )
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Service fee",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Ksh ${property.cleaning_fee ?: 0}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary,
+                    textAlign = TextAlign.End
+                )
+            }
+            Spacer(modifier = Modifier.height(DpDimensions.Smallest))
+
+            HorizontalDivider()
+
+            Spacer(modifier = Modifier.height(DpDimensions.Smallest))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Total",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary
+                )
+
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Ksh ${
+                        (property.cleaning_fee ?: 0) + (property.price * Pair(
+                            checkOutDate,
+                            checkInDate
+                        ).getTotalDays())
+                    }",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.inversePrimary,
+                    textAlign = TextAlign.End
+                )
+            }
+        }
+
+
+    }
+
+
 }
 
 
@@ -275,7 +411,7 @@ fun GuestSection(
                     color = MaterialTheme.colorScheme.inversePrimary
                 )
                 Text(
-                    text = "Adults ${guestState.adults}",
+                    text = "Adults ${guestState.adults}, Children ${guestState.children}, Infants ${guestState.infant}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inversePrimary
                 )
@@ -431,11 +567,7 @@ fun AddMinusButtons(
         IconButton(
             onClick = {
                 onMinusClick(
-                    when (guestType) {
-                        GuestType.ADULT -> guestState.adults - 1
-                        GuestType.CHILDREN -> guestState.children - 1
-                        GuestType.INFANT -> guestState.infant - 1
-                    }, guestType
+                    1, guestType
                 )
             },
             enabled = when (guestType) {
@@ -471,11 +603,7 @@ fun AddMinusButtons(
         IconButton(
             onClick = {
                 onAddClick(
-                    when (guestType) {
-                        GuestType.ADULT -> guestState.adults + 1
-                        GuestType.CHILDREN -> guestState.children + 1
-                        GuestType.INFANT -> guestState.infant + 1
-                    }, guestType
+                    1, guestType
                 )
             },
             enabled = property.accommodates > (guestState.adults + guestState.children + guestState.infant)
@@ -495,16 +623,17 @@ fun AddMinusButtons(
 @Composable
 fun DatePickerBottomSheet(
     modifier: Modifier = Modifier,
-    title: String,
-    onSelectDate: (date: Long) -> Unit = {},
+    onSelectDates: (checkInDate: Long, checkOutDate: Long) -> Unit = { _, _ -> },
     cornerRadius: Dp = DpDimensions.Dp20,
     bottomSheetState: SheetState,
     property: Property,
     onDismiss: () -> Unit,
 ) {
 
-    val state = rememberDatePickerState(
-        initialSelectedDateMillis = null,
+
+    val dateRangerState = rememberDateRangePickerState(
+        initialSelectedStartDateMillis = null,
+        initialSelectedEndDateMillis = null,
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
                 return !property.booked_dates.contains(utcTimeMillis.formatTimeToSmallDate()) &&
@@ -527,8 +656,10 @@ fun DatePickerBottomSheet(
                 .padding(start = DpDimensions.Normal, end = DpDimensions.Normal)
                 .fillMaxWidth(),
         ) {
-            DatePicker(
-                state = state,
+
+            DateRangePicker(
+                state = dateRangerState,
+                modifier = Modifier.weight(1f),
                 colors = DatePickerDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.background,
                     weekdayContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -543,8 +674,14 @@ fun DatePickerBottomSheet(
             CustomPadding(verticalPadding = 0.dp, horizontalPadding = DpDimensions.Normal) {
                 PrimaryButton(
                     label = "Confirm Selection", disabledColor = DisabledColor,
-                    isEnabled = state.selectedDateMillis != null,
-                    onClick = { onSelectDate(state.selectedDateMillis!!) },
+                    isEnabled = dateRangerState.selectedStartDateMillis != null &&
+                            dateRangerState.selectedEndDateMillis != null,
+                    onClick = {
+                        onSelectDates(
+                            dateRangerState.selectedStartDateMillis!!,
+                            dateRangerState.selectedEndDateMillis!!
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(DpDimensions.Dp30))

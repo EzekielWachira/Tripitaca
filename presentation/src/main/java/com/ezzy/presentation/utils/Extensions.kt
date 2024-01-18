@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 private val PUNCTUATION = listOf(", ", "; ", ": ", " ")
 fun String.smartTruncate(length: Int): String {
@@ -107,4 +109,11 @@ fun Long.getDate(): Long {
     calendar.set(Calendar.MILLISECOND, 0)
 
     return calendar.timeInMillis
+}
+
+
+fun Pair<Long, Long>.getTotalDays(): Long {
+    val millisDifference = first - second
+    val daysDifference = TimeUnit.MILLISECONDS.toDays(millisDifference)
+    return abs(daysDifference)
 }
