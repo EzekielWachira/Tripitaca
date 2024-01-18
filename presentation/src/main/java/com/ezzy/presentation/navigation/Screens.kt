@@ -21,6 +21,7 @@ sealed class Screens(val route: String, @StringRes val label: Int, @DrawableRes 
     object AuthMain : Screens(AUTH_MAIN, R.string.auth, R.drawable.placeholder_ic)
     object Auth : Screens(AUTH, R.string.auth, R.drawable.placeholder_ic)
     object Authentication : Screens(AUTHENTICATION, R.string.auth, R.drawable.placeholder_ic)
+    object ViewAll : Screens(VIEW_ALL, R.string.view_all, R.drawable.placeholder_ic)
 
     companion object {
         const val HOME = "home"
@@ -38,6 +39,7 @@ sealed class Screens(val route: String, @StringRes val label: Int, @DrawableRes 
         const val AUTH_MAIN = "auth_app"
         const val AUTH = "auth"
         const val AUTHENTICATION = "authentication"
+        const val VIEW_ALL = "view_all"
     }
 }
 

@@ -17,6 +17,7 @@ import com.ezzy.presentation.navigation.Screens
 import com.ezzy.presentation.profile.ProfileScreen
 import com.ezzy.presentation.utils.slideInVerticallyEnterAnimation
 import com.ezzy.presentation.utils.slideOutVerticallyEnterAnimation
+import com.ezzy.presentation.view_all.ViewAllScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.mainNavGraph(
@@ -76,6 +77,12 @@ fun NavGraphBuilder.mainNavGraph(
             enterTransition = { slideInVerticallyEnterAnimation() },
             exitTransition = { slideOutVerticallyEnterAnimation() }) {
             ProfileScreen(navController = navController)
+        }
+
+        composable(route = Screens.ViewAll.route,
+            enterTransition = { slideInVerticallyEnterAnimation() },
+            exitTransition = { slideOutVerticallyEnterAnimation() }) {
+            ViewAllScreen(navController = navController, detailViewModel = viewModel)
         }
 
 

@@ -43,6 +43,7 @@ import com.ezzy.presentation.home.components.ListingItem
 import com.ezzy.presentation.home.components.SearchFilterComponent
 import com.ezzy.presentation.home.viewmodel.HomeViewModel
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
+import com.ezzy.presentation.navigation.Screens
 import com.ezzy.quizzo.ui.common.state.SearchState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
@@ -132,7 +133,9 @@ fun HomeScreen(
                         ) {
                             CategoryHeader(modifier = Modifier.fillMaxWidth(),
                                 categoryTitle = "Featured",
-                                onClick = {})
+                                onClick = {
+                                    navController.navigate(Screens.ViewAll.route)
+                                })
                         }
 
                         when (listingState.state) {
@@ -172,7 +175,9 @@ fun HomeScreen(
                         ) {
                             CategoryHeader(modifier = Modifier.fillMaxWidth(),
                                 categoryTitle = "Our Recommendations",
-                                onClick = {})
+                                onClick = {
+                                    navController.navigate(Screens.ViewAll.route)
+                                })
                         }
 
                     }

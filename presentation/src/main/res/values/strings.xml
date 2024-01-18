@@ -44,5 +44,6 @@
     <string name="general">General</string>
     <string name="price_details">Price details</string>
     <string name="service_fee">Service fee</string>
+    <string name="all_listings">All Listings</string>
 
 </resources>
