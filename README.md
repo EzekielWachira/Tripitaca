@@ -1,5 +1,3 @@
-Certainly! Let's organize the screenshots into a table with three columns.
-
 # Tripitaca - Explore, Book, and Experience
 
 ## Project Description
@@ -89,6 +87,5 @@ This project is licensed under the [MIT License](LICENSE). See the [LICENSE](LIC
 - Material3, Gson, Dagger Hilt, Jetpack DataStore, Google Maps, Firebase Auth, ViewModel, Coil Compose.
 - Thanks to the open-source community for inspiration and contributions.
 
----
 
-Feel free to further modify and customize this template based on your project's unique aspects. Good luck with your Tripitaca project!
+
