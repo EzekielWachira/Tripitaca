@@ -39,7 +39,6 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -53,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +68,8 @@ import com.ezzy.designsystem.components.CustomPadding
 import com.ezzy.designsystem.components.PrimaryButton
 import com.ezzy.designsystem.theme.DarkBlue
 import com.ezzy.designsystem.theme.DisabledColor
+import com.ezzy.designsystem.theme.Grey46
+import com.ezzy.designsystem.theme.IconDisabled
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
 import com.ezzy.presentation.booking.state.GuestState
@@ -78,8 +80,10 @@ import com.ezzy.presentation.home.components.ListingItem
 import com.ezzy.presentation.listing_detail.viewmodel.DetailViewModel
 import com.ezzy.presentation.utils.formatTimeToSmallDate
 import com.ezzy.presentation.utils.getTotalDays
+import com.ezzy.presentation.utils.showToast
 import com.ezzy.presentation.utils.smartTruncate
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.material.datepicker.DateSelector
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,9 +122,7 @@ fun BookingScreen(
         mutableLongStateOf(0L)
     }
 
-    val totalDays by rememberSaveable {
-        mutableLongStateOf(Pair(checkOutDate, checkInDate).getTotalDays())
-    }
+    val context = LocalContext.current
 
     val scrollState = rememberScrollState()
     val density = LocalDensity.current
@@ -206,10 +208,21 @@ fun BookingScreen(
 
                     }
 
-//                    Text(text = "(${totalDays} days)",
-//                        style = MaterialTheme.typography.bodyMedium,
-//                        color = MaterialTheme.colorScheme.inversePrimary,
-//                        modifier = Modifier.align(Alignment.End))
+                    AnimatedVisibility(visible = (checkInDate != 0L && checkOutDate != 0L),
+                        enter = slideInVertically {
+                            with(density) { -40.dp.roundToPx() }
+                        } + expandVertically(expandFrom = Alignment.Top)
+                                + fadeIn(initialAlpha = .3f),
+                        exit = slideOutVertically() + shrinkVertically() + fadeOut(),
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(
+                            text = "(${Pair(checkOutDate, checkInDate).getTotalDays()} days)",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.inversePrimary,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                    }
                 }
 
 
@@ -264,8 +277,10 @@ fun BookingScreen(
                     horizontalPadding = DpDimensions.Dp20
                 ) {
                     PrimaryButton(
-                        label = "Continue", disabledColor = DisabledColor,
-                        onClick = {},
+                        label = "Book Now", disabledColor = DisabledColor,
+                        onClick = {
+                                  context.showToast("This is the booking feature with proper validation")
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -315,7 +330,7 @@ fun TotalSection(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Ksh ${property.price} x ${
+                    text = "USD ${property.price} x ${
                         Pair(
                             checkOutDate,
                             checkInDate
@@ -327,7 +342,10 @@ fun TotalSection(
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Ksh ${property.price * Pair(checkOutDate, checkInDate).getTotalDays()}",
+                    text  = stringResource(
+                        R.string.currency,
+                        (property.price * Pair(checkOutDate, checkInDate).getTotalDays()).toFloat()
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inversePrimary,
                     textAlign = TextAlign.End
@@ -337,14 +355,17 @@ fun TotalSection(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Service fee",
+                    text = stringResource(R.string.service_fee),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.inversePrimary
                 )
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Ksh ${property.cleaning_fee ?: 0}",
+                    text = stringResource(
+                        R.string.currency,
+                        (property.cleaning_fee ?: 0).toFloat()
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inversePrimary,
                     textAlign = TextAlign.End
@@ -366,12 +387,13 @@ fun TotalSection(
 
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "Ksh ${
+                    text = stringResource(
+                        R.string.currency,
                         (property.cleaning_fee ?: 0) + (property.price * Pair(
                             checkOutDate,
                             checkInDate
-                        ).getTotalDays())
-                    }",
+                        ).getTotalDays()).toFloat()
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.inversePrimary,
                     textAlign = TextAlign.End
@@ -582,11 +604,29 @@ fun AddMinusButtons(
                 GuestType.INFANT -> {
                     guestState.infant > 0
                 }
-            }
+            },
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.minus), contentDescription = "Minus Icon",
-                modifier = Modifier.size(DpDimensions.Dp20)
+                modifier = Modifier.size(DpDimensions.Dp20),
+                tint = when(guestType) {
+                    GuestType.ADULT -> {
+                        if (guestState.adults <= 0) {
+                            MaterialTheme.colorScheme.secondary
+                        } else MaterialTheme.colorScheme.inversePrimary
+                    }
+                    GuestType.CHILDREN -> {
+                        if (guestState.children <= 0) {
+                            MaterialTheme.colorScheme.secondary
+                        } else MaterialTheme.colorScheme.inversePrimary
+                    }
+
+                    GuestType.INFANT -> {
+                        if (guestState.infant <= 0) {
+                            MaterialTheme.colorScheme.secondary
+                        } else MaterialTheme.colorScheme.inversePrimary
+                    }
+                }
             )
         }
 
@@ -602,14 +642,17 @@ fun AddMinusButtons(
 
         IconButton(
             onClick = {
-                onAddClick(
-                    1, guestType
-                )
+                onAddClick(1, guestType)
             },
-            enabled = property.accommodates > (guestState.adults + guestState.children + guestState.infant)
+            enabled = when (guestType) {
+                GuestType.ADULT -> property.accommodates > (guestState.adults)
+                GuestType.CHILDREN -> guestState.children < 10
+                GuestType.INFANT -> guestState.infant < 10
+            }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.add), contentDescription = "Add Icon",
+                painter = painterResource(id = R.drawable.add),
+                contentDescription = "Add Icon",
                 modifier = Modifier.size(DpDimensions.Dp20)
             )
         }

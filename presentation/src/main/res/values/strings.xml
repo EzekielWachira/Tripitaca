@@ -13,6 +13,7 @@
     <string name="amenities">Amenities</string>
     <string name="view_all">View All</string>
     <string name="reviews">%1$.1f ( %2$,.0f reviews )</string>
+    <string name="currency">USD %1$,.0f</string>
     <string name="overview">Overview</string>
     <string name="read_less">Read less</string>
     <string name="read_more">Read more…</string>
@@ -42,4 +43,6 @@
     <string name="yes_logout">Yes, logout</string>
     <string name="general">General</string>
     <string name="price_details">Price details</string>
+    <string name="service_fee">Service fee</string>
+
 </resources>

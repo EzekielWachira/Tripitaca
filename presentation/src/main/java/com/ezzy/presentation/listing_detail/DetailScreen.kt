@@ -470,7 +470,7 @@ fun BottomSection(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = property.price.toString(),
+                            text = stringResource(id = R.string.currency, property.price.toFloat()),
                             style = MaterialTheme.typography.headlineLarge,
                             color = MaterialTheme.colorScheme.inversePrimary
                         )

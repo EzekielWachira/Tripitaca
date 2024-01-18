@@ -17,4 +17,5 @@ val Grey14 = Color(0xFF1F222A)  // Search Dark
 val Grey96 = Color(0xFFF5F5F5) // Search light
 val Grey74 = Color(0xFFBDBDBD) // Icon Light
 val Grey46 = Color(0xFF757575) // Icon Dark
+val IconDisabled = Color(0xFF919191) // Icon Dark
 val Grey13 = Color(0xFF212121) // Text Light

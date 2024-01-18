@@ -1,5 +1,6 @@
 package com.ezzy.presentation.home.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
@@ -24,12 +25,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.ezzy.data.domain.model.Property
+import com.ezzy.data.utils.property
 import com.ezzy.designsystem.components.CustomPadding
+import com.ezzy.designsystem.theme.TripitacaTheme
 import com.ezzy.designsystem.utils.DpDimensions
 import com.ezzy.presentation.R
 
@@ -119,14 +124,17 @@ fun ListingItem(
                 ) {
 
                     Text(
-                        text = listing.price.toString(),
+                        text = stringResource(
+                            R.string.currency,
+                            listing.price.toFloat()
+                        ),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center
                     )
 
                     Text(
-                        text = "/day",
+                        text = "/night",
                         color = MaterialTheme.colorScheme.inversePrimary,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
@@ -139,4 +147,13 @@ fun ListingItem(
 
     }
 
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun ListingItemPreview() {
+    TripitacaTheme {
+        ListingItem(modifier = Modifier.fillMaxWidth(), property)
+    }
 }
