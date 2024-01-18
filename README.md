@@ -58,7 +58,7 @@ Tripitaca is a sophisticated Android application built with Kotlin and Jetpack C
 | ![Screenshot 7](https://github.com/EzekielWachira/Tripitaca/blob/main/Screenshots/Screenshot_20240118_165228.png) | ![Screenshot 8](https://github.com/EzekielWachira/Tripitaca/blob/main/Screenshots/Screenshot_20240118_165345.png) | ![Screenshot 9](https://github.com/EzekielWachira/Tripitaca/blob/main/Screenshots/Screenshot_20240118_165353.png) |
 
 ## Demo
-https://github.com/EzekielWachira/Tripitaca/blob/main/Screenshots/video.mp4
+![](https://github.com/EzekielWachira/Tripitaca/blob/main/Screenshots/video1.gif)
 
 
 ## Getting Started
