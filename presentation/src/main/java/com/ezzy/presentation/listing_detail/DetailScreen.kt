@@ -98,8 +98,6 @@ fun DetailScreen(
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = !isSystemInDarkMode
 
-
-//    val viewModel: DetailViewModel = hiltViewModel()
     val state by viewModel.singleListingState.collectAsStateWithLifecycle()
     val property by viewModel.property.collectAsStateWithLifecycle()
 
@@ -205,93 +203,8 @@ fun DetailScreen(
             } else {
                 ErrorComponent(errorMessage = "Error Loading Listing")
             }
-
-//            when (state.state) {
-//                is StateWrapper.Loading -> {
-//                    LoadingComponent()
-//                }
-//
-//                is StateWrapper.Success -> {
-//
-//
-//                    if ((state.state as StateWrapper.Success<Property?>).data != null) {
-//                        (state.state as StateWrapper.Success<Property?>).data?.let { property ->
-//                            Column(modifier = Modifier.fillMaxSize()) {
-//                                Column(
-//                                    modifier = Modifier
-//                                        .weight(1f)
-//                                        .verticalScroll(rememberScrollState())
-//                                ) {
-//
-//
-//                                    Spacer(modifier = Modifier.height(DpDimensions.Small))
-//
-//                                    ImagesPager(
-//                                        images = property.photos,
-//                                        pagerState = rememberPagerState {
-//                                            property.photos.size
-//                                        })
-//
-//                                    Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-//
-//                                    Column(
-//                                        modifier = Modifier
-//                                            .padding(DpDimensions.Normal)
-//                                            .fillMaxWidth()
-//                                    ) {
-//
-//                                        InfoSection(property = property)
-//
-//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp30))
-//
-//                                        Divider(color = MaterialTheme.colorScheme.outline)
-//
-//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-//                                        OwnerSection(
-//                                            property = property,
-//                                            modifier = Modifier.fillMaxWidth()
-//                                        )
-//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-//                                        DescriptionSection(
-//                                            property = property,
-//                                            modifier = Modifier.fillMaxWidth()
-//                                        )
-//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-//                                        FacilitiesSection(
-//                                            property = property,
-//                                            modifier = Modifier.fillMaxWidth()
-//                                        )
-//                                        Spacer(modifier = Modifier.height(DpDimensions.Dp20))
-//                                        LocationSection(
-//                                            modifier = Modifier.fillMaxWidth(),
-//                                            property = property
-//                                        )
-//                                    }
-//                                }
-//
-//                                BottomSection(property = property, onClick = {
-//
-//                                })
-//                            }
-//                        }
-//                    } else {
-//                        ErrorComponent(errorMessage = "Error Loading Listing")
-//                    }
-//                }
-//
-//                is StateWrapper.Failure -> {
-//                    ErrorComponent(errorMessage = (state.state as StateWrapper.Failure).errorMessage)
-//                }
-//
-//                is StateWrapper.Empty -> {}
-//            }
-
-
         }
-
     }
-
-
 }
 
 
